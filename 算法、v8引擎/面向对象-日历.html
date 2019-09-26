@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		*{margin:0;padding:0;}
+		#calendar{
+			margin: 10px 0 0 20px;
+			box-sizing: border-box;
+		}
+		.header {
+			display: flex;
+			justify-content: space-between;
+			width: 245px;
+			height: 30px;
+			line-height: 30px;
+			background: #84f9d4;
+		}
+		.arrow-left {
+			padding-left: 10px;
+			cursor: pointer;
+		}
+		.arrow-right {
+			padding-right: 10px;
+			cursor: pointer;
+		}
+		.year, .month {
+			font-weight: normal;
+		}
+		.week {
+			width: 245px;
+		}
+		.week span {
+			display: inline-block;
+			width: 35px;
+			height: 30px;
+			line-height: 30px;
+			text-align: center;
+		}
+		.list {
+			display: flex;
+  			flex-wrap: wrap;
+  			width: 245px;
+		}
+		ul li {		
+			width: 35px;
+			height: 30px;
+			line-height: 30px;
+			list-style: none;
+			text-align: center;
+			color: #353A41;
+		}
+		li.active {
+			background-color: #aee4d7;
+  			border-radius: 50%;
+			color: #009A70;
+		}
+		li.current_day {
+			background-color: #ACEBDC;
+  			border-radius: 50%;
+			color: #009A70;
+		}
+		li:hover {
+			cursor: pointer;
+			background: #cdefe7;
+			border-radius: 50%;
+		}
+	</style>
+</head>
+<body>
+	<div id="calendar">
+		<div class="header">
+			<span class="arrow-left"><</span>
+			<b class="year"></b>
+			<i class="arrow-right">></i>
+		</div>
+		<div class="week"></div>
+		<ul class="list"></ul>
+	</div>
+
+	<script>
+		class Calendar {
+			constructor(options) {
+				this.$options = options
+				this.$callBack = this.$options.callBack || function() {}
+
+				let oDate = new Date()
+				this.oYear = oDate.getFullYear()
+				this.oMonth = oDate.getMonth() + 1
+				this.oDay = oDate.getDate()
+
+				this.oWeek = ['日','一','二','三','四','五','六']
+				this.oW = this.Selector('.week')
+			
+				this.oW.innerHTML = this.InitCalendar(this.oWeek)
+				this.Render(this.oYear, this.oMonth)
+				this.CurrentEle()
+				this.HandlePrev()
+				this.HandleNext()
+				
+			}
+
+			// 初始化日历
+			InitCalendar(data) {
+				let str = '';
+				for(let i = 0; i <= data.length - 1; i++){
+					str += `<span data-index="${data[i]}">${data[i]}</span>`
+				}
+				return str	
+			}
+
+			// 渲染
+			Render(currentYear, currentMonth) {
+				let $ul = this.Selector('.list')
+				let year = this.Selector('.year').innerHTML = currentYear + '年' + currentMonth + '月'
+				// 获取当月天数
+				let dayNum = new Date(currentYear, currentMonth, 0).getDate()
+
+				//获取当月第一天是周几
+    			let weekStart = new Date(currentYear, currentMonth-1, 1).getDay()
+
+				//展示当月日期需要的行数
+			    let lineNum = Math.ceil(dayNum)
+
+			    let $li = '';
+			    for(var i = 1; i <= lineNum; i++){
+					if (this.oDay == i){						
+	      				$li += `<li class="current_day">${i}</li>`;
+					} else {
+						$li += `<li>${i}</li>`;
+					}
+	        		$ul.innerHTML = $li
+		    	}
+
+		    	this.$callBack(this.oDay)
+
+		    	for(var j = 1; j <= weekStart; j++){
+		    		let li = document.createElement("li")
+		    		li.innerHTML += ``
+
+		    		// 获取第一个li标签
+		    		let first = $ul.firstChild
+		    		$ul.insertBefore(li, first)
+		    	}
+			}
+
+			// 当前点击元素
+			CurrentEle() {
+				let $lis = document.querySelectorAll('li')
+				for(let i = 0; i < $lis.length; i++){
+                    $lis[i].addEventListener('click', function(event){
+                        // console.log(event.target.innerHTML)
+						event.target.className = 'active'
+						this.Siblings(event.target)
+						this.$callBack(event.target.innerHTML)
+                    }.bind(this))
+                }
+			}
+
+			// 上一页
+			HandlePrev() {
+				let arrowLeft = this.Selector('.arrow-left')
+				arrowLeft.addEventListener('click', function(event){
+					if(this.oMonth > 1){
+						this.oMonth--
+					} else {
+						this.oMonth = 12
+						this.oYear--
+					}
+				this.Render(this.oYear, this.oMonth)
+				}.bind(this))
+			}
+
+			// 下一页
+			HandleNext() {
+				let arrowRight = this.Selector('.arrow-right')
+				arrowRight.addEventListener('click', function(event){
+					if(this.oMonth < 12){
+						this.oMonth++
+					} else {
+						this.oMonth = 1
+						this.oYear++
+					}
+				let year = this.Selector('.year').innerHTML = this.oYear
+				this.Render(this.oYear, this.oMonth)
+				}.bind(this))
+			}
+
+			// 获取同级元素
+			Siblings(oLi){
+                var oBox= oLi.parentNode
+                var lis = oBox.children
+                for(var i = 0;i < lis.length; i++){
+                    if (lis[i] != oLi){
+                        lis[i].className = ''
+                    }
+                }
+            }
+
+			// 选择器
+			Selector(ele) {
+				return document.querySelector(ele)
+			}
+		}
+
+		new Calendar({
+			callBack: function(currentDay){
+				console.log('当前天：' + currentDay)
+			}
+		})
+	</script>
+</body>
+</html>

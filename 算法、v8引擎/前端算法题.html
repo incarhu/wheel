@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		/*
+			1、实现数组冒泡排序（排json）
+			调用：bubbleSort(array, type, up|down)	
+				  bubbleSort(array, '需要按什么来排序', '方向：是从大到小还是从小到大')
+
+				function bubbleSort(arr) {
+					var arg = Array.prototype.slice.call(arguments);
+			        var arr = arg[0],
+			            type = arg[1],
+			            direction = arg[2];
+			        
+			        for (let i = 0; i < arr.length - 1; i++) {
+			            for(let j = 0; j < arr.length - 1 - i;j ++) {
+			                var arrJ = Number(arr[j][type]),
+			                    arrJ2 = Number(arr[j+1][type]);
+			                if (direction == 'up') {
+			                    if(arrJ > arrJ2) {
+			                        [arr[j+1],arr[j]] = [arr[j],arr[j+1]]
+			                    }
+			                } else {
+			                    if(arrJ < arrJ2) {
+			                        [arr[j+1],arr[j]] = [arr[j],arr[j+1]]
+			                    }
+			                }
+			            }
+			        }
+			        return arr
+				}
+				var array = [
+					{name: '张三', age: 22},
+					{name: '张三2', age: 24},
+					{name: '张三3', age: 23}
+				]
+				console.log(bubbleSort(array, 'age', 'down'))
+
+
+			2、打印出此句“you know my loneliness is only kept for you my sweet songs are only sung for you”每个单词出现的次数
+
+				function checkNum(str) {			
+					str = str.split(' ')
+					var obj = {}
+					for (let i = 0; i < str.length; i++) {
+						if(obj[str[i]]){	// 匹配到的话，每次就累加1
+							obj[str[i]]++
+						} else {
+							obj[str[i]] = 1
+						}
+					}
+
+					for(let key in obj){
+						console.log(key + '  出现了：' + obj[key] + '次')
+					}
+				}
+				var str = 'you know my loneliness is only kept for you my sweet songs are only sung for you'
+				checkNum(str)
+
+
+			3、封装一个方法判断是否有回文 例如ascdcsa、1001是回文
+
+				function isPlalindrome(str) {
+					str = str.split('')
+
+					var mid = Math.floor(str.length / 2)
+					var mids = mid + 1
+
+					var left = str.slice(0, mid)
+
+					if(str.length % 2 == 0){
+						// 表示偶数
+						var right = str.slice(mid)
+					} else {
+						// 表示基数
+						var right = str.slice(mids)
+					}
+
+					var leftReverse = left.join('')
+					var rightReverse = right.reverse().join('')
+					console.log(leftReverse === rightReverse)
+				}
+				var str = 'ascdcsa'
+				isPlalindrome(str)
+
+
+			4、实现一个字符串匹配算法，从字符串中，查找是否存在某个字符串，如果存在，得到字符串的长度，并且返回所有查找到的位置
+		*/
+			function searchText(source, str) {
+				var array = []
+				for(var i = 0; i < source.length; i++){
+					// console.log(i)
+					if(source[i].indexOf(str) !== -1) {
+						// console.log('出现的位置下标：' + i)
+						array.push(i)
+					}
+				}
+				return array
+			}
+			var sourceStr = 'adsfgshlk'
+			var str = 's'
+			console.log(searchText(sourceStr, str))
+	</script>
+</body>
+</html>

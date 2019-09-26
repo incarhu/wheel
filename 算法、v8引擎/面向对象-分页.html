@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        *{margin:0;padding:0;}
+        .footer{
+            width: 100%;
+            margin: 20px;
+            font-size: 13px;
+        }
+        .prev, .next{
+            float: left;
+            width: 30px;
+            line-height: 30px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+            outline: none;
+        }
+        li{
+            list-style: none;
+            float: left;
+            line-height: 30px;
+            margin: 0 5px;
+            width: 30px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            text-align: center;          
+            cursor: pointer;
+        }
+        li.active{
+            background: #fff;
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        li:hover{
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+        .jump{
+            float: left;
+            margin-left: 5px;
+        }
+        .jump input {
+            width: 40px;
+            height: 30px;
+            line-height: 30px;
+            padding: 0 3px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            text-align: center;
+            outline: none;
+        }
+        .jump .jump-btn {
+            height: 32px;
+            line-height: 32px;
+            padding: 0 5px;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            background: #fff;
+            cursor: pointer;
+        }
+        .jump .jump-btn:hover {
+            opacity: .6;
+        }
+        .clearfix::after {
+            content: "";
+            display: block;
+            height: 0;
+            clear: both;
+            visibility: hidden;;
+        }
+    </style>
+</head>
+<body>
+    <div class="footer">
+        <!-- <button class="prev"><</button>
+        <ul class="ul">
+            
+        </ul>
+        <button class="next">></button>
+        <div class="jump">           
+            <input type="text" class="oval">
+            <button class="jump-btn">前往</button>     
+        </div> -->
+    </div>
+
+    <script>
+        class Pagination {
+            constructor(options){
+                this.$options = options
+                // DOM节点
+                this.$el = this.selector(this.$options.el)
+                // 总条数
+                this.total = this.$options.total
+                // 总页数
+                this.pageSize = (this.total / this.$options.pageSize)
+                // 当前页
+                this.currentPage = this.$options.currentPage || 1
+                // 显示多少页
+                this.pagerCount = this.$options.pagerCount
+                // 回调方法
+                this.$callBack = this.$options.callBack || function() {}
+                
+                this.$callBack(this.currentPage)
+                // 判断奇偶
+                this.judgeParity()
+                // 统一点击
+                this.publicHandle()
+            }
+
+            // 判断传入进来的pagerCount的奇偶
+            judgeParity() {
+                if(this.pagerCount % 2 == 0) {
+                    // 表示是偶数
+                    alert('请传入基数')
+                    return
+                } else if (this.pagerCount > this.pageSize) {
+                    alert('请传入正确页码')
+                    return
+                } else {
+                    this.initPage()
+                }
+            }
+
+            // 初始化分页器
+            initPage() {
+                this.currentPage = Number(this.currentPage)
+                // 求奇偶数
+                let offPage = (this.pagerCount - 1) / 2
+                // 开始页
+                let startPage = this.currentPage - offPage
+                // 结束页
+                let endPage = this.currentPage + offPage
+
+                if (this.currentPage < offPage + 1) {
+                    startPage = 1
+                    endPage = 2 * offPage + 1
+                };
+                if (this.currentPage + offPage > this.pageSize) {
+                    startPage = this.pageSize - 2 * offPage
+                    endPage = this.pageSize
+                }
+
+                let str = '';
+                    str += '<button class="prev"><</button>'
+                    str += '<ul class="ul">'
+                // str += '<li>1</li>'
+                // str += '<li class="more-prex">...</li>'
+
+				for(let i = startPage; i <= endPage; i++){
+					if(this.currentPage == i){
+                        str += `<li class="col active">${i}</li>`
+                    } else {
+                        str += `<li class="col">${i}</li>`
+                    }
+				}
+
+                str += '</ul>'
+                str += '<button class="next" oncli>></button>'
+                str += `<div class="jump">
+                            <input type="text" class="oval">
+                            <button class="jump-btn">前往</button>
+                        </div>`
+
+                // str += '<li class="more-prex">...</li>'
+                // str += `<li>${this.pageSize}</li>`
+                this.$el.innerHTML = str
+            }
+
+            // 统一点击事件
+            publicHandle() {
+                this.$el.onclick = function(event) {
+                    let e = event.target
+                    if (e.tagName === 'LI' && e.className === 'col'){
+                        this.initClick(e.innerHTML)
+                    } else if (e.tagName === 'BUTTON' && e.className === 'prev'){
+                        this.prevClick(e)
+                    } else if (e.tagName === 'BUTTON' && e.className === 'next') {
+                        this.nextClick(e)
+                    } else if (e.tagName === 'BUTTON' && e.className === 'jump-btn') {
+                        this.jump()
+                    }
+                }.bind(this)
+            }
+
+            // 添加点击事件
+            initClick(val) {
+                this.currentPage = Number(val)
+                this.initPage(this.currentPage)
+                this.$callBack(this.currentPage)
+            }
+
+            // 上一页
+            prevClick(e) {
+                if(this.currentPage > 1){
+                    this.currentPage--
+                    this.initPage(this.currentPage)
+                } else {
+                    this.disableBtn(e)
+                }
+                this.$callBack(this.currentPage)
+            }
+
+            // 下一页
+            nextClick(e) {
+                if(this.currentPage < this.pageSize){
+                    this.currentPage++
+                    this.initPage(this.currentPage)
+                } else {
+                    this.disableBtn(e, this.currentPage)
+                }
+                this.$callBack(this.currentPage)
+            }
+
+            // 弹出提示
+            disableBtn(event) {
+                if(this.currentPage <= 1){
+                    alert('已经是首页')
+                    return
+                } else if(this.currentPage == this.pageSize){
+                    alert('已经是尾页')
+                    return
+                }
+            }
+
+            // 跳转
+            jump() {      
+                let oVal = this.selector('.oval'),
+                    e = event.target;
+
+                if(!!oVal.value){
+                    this.currentPage = Number(oVal.value)
+                    if(this.currentPage > this.pageSize){
+                        alert('暂无更多页')
+                    } else {
+                        this.initPage(this.currentPage)
+                    }
+                } else {
+                    alert('请输入')
+                }
+                this.$callBack(this.currentPage)
+            }
+
+            // 选择器
+            selector(ele) {
+                if(!!ele && ele.indexOf('.') !== -1) {
+                    return document.querySelector(ele)
+                } else {
+                    return document.querySelectorAll(ele)
+                }         
+            }
+        }
+
+        Array.prototype.first = function(){
+            return this[0]
+        }
+        
+        // 实例化分页控件
+        var pagination = new Pagination({
+            el: '.footer',
+            pageSize: 10,
+            currentPage: 5,
+            total: 100,
+            pagerCount: 5,
+            callBack: function(currentPage){
+                console.log('当前页：' + currentPage)
+            }
+        })
+    </script>
+</body>
+</html>

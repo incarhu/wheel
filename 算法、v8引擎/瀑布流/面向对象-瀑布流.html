@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style>
+		* {margin:0; padding:0;}
+		.water-fall {
+			width: 100%;
+		    position: relative;
+		    top: 10px;
+		}
+		.clearfix::after {
+			content: "";
+			display: block;
+			clear: both;
+			visibility: hidden;
+		}
+	    .single-waterfull img {
+	    	float: left;
+	        padding-left: 20px;
+	    }
+	</style>
+</head>
+<body>
+	<div class="water-fall">
+		<div class="single-waterfull clearfix">
+            <!-- <img alt=""> -->
+        </div>
+	</div>
+
+
+	<script>
+		class WaterFull {
+			constructor(options){
+				this.$options = options
+				this.$data = this.$options.data
+				this.$el = this.Selector(this.$options.el)				
+				this.$el.innerHTML = this.InitWaterFull(this.$data)
+				this.GetCompWater()
+			}
+
+			// 初始化瀑布流页面渲染
+			InitWaterFull(data) {
+				let str = '';
+				for(let i = 1; i <= data; i++) {
+					str += `<img src="./images/${i}.jpg"></img>`
+				}
+				return str
+			}
+
+			// 获取DOM元素
+			GetCompWater() {
+				let oImg = this.Selector('img'),
+					oWidth = '';
+				return new Promise(function(resolve){
+					setTimeout(function(){
+						oImg.forEach(function(item){
+							oWidth = item.offsetWidth		// 获取每张图片的宽度
+						})
+						resolve(oWidth)
+					}, 300)
+				}).then(function(res){
+					this.CompWater(oImg, oWidth)
+				}.bind(this))
+			}
+
+			// 计算瀑布流
+			CompWater() {
+				let args = Array.prototype.slice.call(arguments)
+				let el = args.first()
+				let data = args[1]
+				let heightArr = [];                 // 图片的高度
+	            let scrollW = window.screen.width       // 获取浏览器屏幕物理分辨率的宽
+	            let cols = parseInt(scrollW / data)               // 计算每行能展示多少个
+
+	            el.forEach((item, index) => {
+	                let boxH = item.offsetHeight        // 每张图片的高度
+	                if (index < cols) {
+	                    // 当下标小于列数时
+	                     heightArr[index] = boxH
+	                } else {
+	                    let minBoxHeight = Math.min.apply(this, heightArr)     
+	                    let minBoxIndex = null 
+	                    heightArr.forEach((item, index) => {
+	                        if(minBoxHeight == item){           
+	                            minBoxIndex =  index            // 取到当前高度对应的下标
+	                        }
+	                    })
+	                    
+	                    // 定位
+	                    item.style.position = 'absolute'
+	                    item.style.top = minBoxHeight + 'px'               // 最小高度
+	                    item.style.left = minBoxIndex * data + 'px'                // 最小索引+图片宽度
+
+	                    heightArr[minBoxIndex] += boxH
+	                }
+	            })
+			}
+
+			// 选择器
+			Selector(el) {
+				if(!!el && el.indexOf('.') !== -1){
+					return document.querySelector(el)
+				} else {
+					return document.querySelectorAll(el)
+				}
+			}
+		}
+
+		// 获取数组第一个元素
+		Array.prototype.first = function() {
+			return this[0]
+		}
+
+		new WaterFull({
+			el: '.single-waterfull',
+			data: 15
+		})
+	</script>
+</body>
+</html>

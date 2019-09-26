@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>document</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}	
+		ul {
+			position: relative;
+			padding-left: 40px;
+		}
+		ul li {
+			list-style: none;
+		}
+		ul li p {
+			height: 25px;
+			line-height: 25px;
+			display: inline-block;
+		}
+		ul li .add {
+			margin-left: 20px;
+			cursor: pointer;
+			color: lightgreen;
+		}
+		ul li .deletes {
+			margin-left: 10px;
+			cursor: pointer;
+			color: #ff0000;
+		}
+		ul li p:hover {
+			cursor: pointer;
+		}
+		ul li p::after {
+			content: "";
+			position: absolute;
+			left: 10px;
+			top: 0;
+			width: 1px;
+			height: 13px;
+			background: #000;
+		}
+		ul li p::before {
+			content: "";
+			position: absolute;
+			left: 10px;
+			top: 13px;
+			width: 25px;
+			height: 1px;
+			background: #000;
+		}
+
+		.tree-wrap>ul>li>p:first-child::after{
+			display: none;
+		}
+		.tree-wrap>ul>li>p:first-child::before{
+			display: none;
+		}
+	</style>
+</head>
+<body>
+	<div class="tree-wrap">
+		
+	</div>
+	<script>
+		var arr = [
+			{
+				"name": "张三",
+				"children": [
+					{
+						"name": "张三222",
+						"children": [
+							{
+								"name": "张三333"
+							}
+						]
+					}
+				]
+			},
+			{"name": "小明"},
+			{
+				"name": "john",
+				"children": [
+					{
+						"name": "john22"
+					}
+				]
+			}
+		]
+
+		// 创建树
+		class Tree {
+			constructor(options) {
+				this.$options = options
+				this.$data = this.$options.data
+				this.$el = document.querySelector(this.$options.el)
+
+				this.$el.innerHTML = this.LiveTree(this.$data)	
+			}
+
+			// 实例树展示
+			LiveTree(data) {
+				var str = `<ul>`
+				for(var i = 0; i < data.length; i++){
+					str += `<li>`;
+					str += `
+						<p data-flag="true" onClick="new CheckNode(event)">${data[i].name}</p>
+						<span class="add" onClick="new Add(event)">添加</span>
+						<span class="deletes" onClick="new Deletes(event)">删除</span>`;
+					if(data[i].children && data[i].children.length) {
+						str += this.LiveTree(data[i].children);
+					}
+					str += `</li>`;
+				}
+				
+
+				str += `</ul>`
+				return str
+			}
+		}
+
+
+		// 检查节点 
+		class CheckNode {
+			constructor(event) {
+				this.$event = event
+				this.Toggle(this.$event)
+			}
+
+			// 检查元素并展开折叠
+			Toggle(event) {
+				var flag = event.target
+				// 获取当前点击DOM的同级元素标签
+				var oSibling = event.target.parentNode.lastChild;
+				if(!!oSibling && !!oSibling.childNodes) {
+					var oChild = Array.prototype.slice.call(oSibling.childNodes);
+					for(var i = 0; i < oChild.length; i++){
+						// 表示非文本节点
+						if(oChild[i].nodeType === 1){
+							if(this.GetData(flag.getAttribute('data-flag'))) {
+								flag.setAttribute("data-flag", false)
+								oChild[i].style.display = 'none'
+							} else {
+								flag.setAttribute("data-flag", true)
+								oChild[i].style.display = 'block'
+							}
+						}
+					}
+				}
+			};
+
+			// JQ源码转换自定义属性
+			GetData(data) {
+				if ( data === "true" ) {
+					return true;
+				}
+
+				if ( data === "false" ) {
+					return false;
+				}
+
+				if ( data === "null" ) {
+					return null;
+				}
+				return data;
+			}
+		}
+
+		// 添加节点
+		class Add {
+			constructor(event) {
+				this.$event = event
+				this.AddNodes(this.$event)
+			}
+
+			// 文本
+			AddNodes(event) {
+				var oParent = event.target.parentNode
+				var oSpace = document.createElement('ul')
+				oParent.appendChild(oSpace)
+				oSpace.innerHTML = this.CreateNode()
+			}
+
+			// 文本
+			CreateNode() {
+				var addStr = `
+								<li>
+									<p data-flag="true" onClick="new CheckNode(event)">sdfsdfsd</p>
+									<span class="add" onClick="new Add(event)">添加</span>
+									<span class="deletes" onClick="new Deletes(event)">删除</span>
+								</li>
+						`;
+				return addStr
+			}
+		}
+
+		// 删除
+		class Deletes {
+			constructor(event) {
+				this.$event = event
+				this.update(this.$event)
+			}
+
+			update(event) {
+				// 获取到当前节点的爷爷节点
+				var oGrandpa = event.target.parentNode.parentNode
+
+				// 获取到当前节点的曾祖父节点
+				var oGreatGrandfather = event.target.parentNode.parentNode.parentNode
+
+				// 表示是祖父节点
+				if(oGreatGrandfather.tagName === 'DIV') {			
+					// 获取到当前节点的父节点，即（ul节点）
+					var oParent = event.target.parentNode
+					// 获取到爷爷节点，即（li节点）
+					var oParents = oGrandpa
+				} else {
+					// 获取到当前节点的爷爷节点，即（ul节点）
+					var oParent = oGrandpa
+					// 获取到曾祖父节点，即（li节点）
+					var oParents = oGreatGrandfather
+				}
+
+				// 删除掉ul节点
+				oParents.removeChild(oParent)
+			}
+		}
+
+
+		// 实例化--调用
+		new Tree({
+			data: arr,
+			el: '.tree-wrap'
+		})
+	</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script>
+        /* 
+            1.首先实现一个整体的VUE类，Watcher类
+            2.实现MVVM中的M到V，把模型里的数据绑定到视图
+            3.(1)最后实现从V-M，当文本框输入的时候，由文本事件触发更新模型中的数据
+              (2)同时更新相应的视图
+        */
+
+        // 发布者
+        class Vue {
+            constructor(options) {
+                this.options = options
+                this.$data = options.data   // 获取数据
+                this.$el = document.querySelector(options.el)
+
+                this._directive = {}    // 容器，存放数据
+
+                this.Observer(this.$data)
+                this.Compile(this.$el)
+            }
+
+            // 数据劫持
+            Observer (data) {
+                for (let key in data) {
+                    this._directive[key] = []
+                    let Val = data[key]
+                    let watch = this._directive[key]
+                    // this.$data 对象里面的每一个属性发生变化，都要更新视图
+                    Object.defineProperty(this.$data, key, {
+                        get: function () {
+                            return Val
+                        },
+
+                        set: function(newVal) {
+                            if (newVal !== Val) {   // 当新值不等于老值时，将老值赋给新值
+                                Val = newVal
+                                watch.forEach(item => {
+                                    item.update()
+                                })
+                            }
+                        }
+                    })
+                }    
+            }
+
+            // 解析指令
+            Compile (el) {
+                let nodes = el.children
+                for (let i = 0; i < nodes.length; i++) {
+                    if (nodes[i].children.length) {
+                        // 递归循环
+                        this.Compile(nodes[i])
+                    }
+
+                    // 判断是否含有指令v-text
+                    if (nodes[i].hasAttribute('v-text')) {
+                        let attrVal = nodes[i].getAttribute('v-text')
+                        this._directive[attrVal].push(new Watcher(nodes[i], this, attrVal, "innerHTML"))
+                    }
+                    // 判断是否含有指令v-model
+                    if (nodes[i].hasAttribute('v-model')) {
+                        let attrVal = nodes[i].getAttribute('v-model')
+                        this._directive[attrVal].push(new Watcher(nodes[i], this, attrVal, "value"))
+
+                        // 监听input输入框事件
+                        nodes[i].addEventListener('input',()=>{
+                            this.$data[attrVal] = nodes[i].value
+                        })
+                    }
+                }
+            }
+        }
+
+        // 订阅者
+        class Watcher {
+            constructor(el, vm, exp, attr) {
+                this.el = el
+                this.vm = vm
+                this.exp = exp
+                this.attr = attr
+                this.update()   // 初始化视图
+            }
+
+            update () {
+                this.el[this.attr] = this.vm.$data[this.exp]
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="app">
+        <h1>数据响应式原理</h1>
+        <div>
+            <div v-text="myText"></div>
+            <div v-text="myBox"></div>
+            <input type="text" v-model="myText">
+        </div>
+    </div>
+
+    <script>
+        const app = new Vue({
+            el: "#app",
+            data: {
+                myText: '大吉大利，今晚吃鸡',
+                myBox: '落地成盒'
+            }
+        })
+    </script>
+</body>
+</html>

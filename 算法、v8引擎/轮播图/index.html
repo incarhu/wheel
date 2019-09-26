@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>轮播图</title>
+	<style>
+		*{margin:0;padding:0;}
+		#carousel {
+			width: 780px;
+			height: 250px;
+			margin: 20px;
+			position:relative;
+			overflow: hidden;
+		}
+		.prev {
+			position: absolute;
+			top: 75px;
+			left: 0;
+			z-index: 2;
+			display: block;
+			width: 80px;
+			height: 80px;
+			cursor: pointer;
+			background: url('./images/prev.png') no-repeat;
+			background-size: cover;
+		}
+		.next {
+			position: absolute;
+			top: 75px;			
+			right: 0;
+			z-index: 2;
+			display: block;
+			width: 80px;
+			height: 80px;
+			cursor: pointer;
+			background: url('./images/next.png') no-repeat;
+			background-size: cover;
+		}
+		.carousel-wrap {
+			width: 9990px;
+			position: absolute;
+			left:0;
+			top:0;
+			z-index: 1;
+		}
+		#carousel .carousel-wrap img {
+			float: left;
+			display: block;
+			width: 780px;
+			height: 250px;
+			cursor: pointer;
+		}
+		.pagination {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			z-index: 2;
+		}
+		.pagination .circle {
+			display: inline-block;
+			width: 6px;
+			height: 6px;
+			margin-right: 5px;
+			border: 1px solid #f96e6e;
+			border-radius: 50%;
+			cursor: pointer;
+		}
+		.active {
+			background: #000;
+		}
+	</style>
+	<script src="./js/index.js"></script>
+</head>
+<body>
+	<div id="carousel">	
+		<div class="carousel-wrap">
+			<img src="./images/1.jpg" alt="">
+			<img src="./images/2.jpg" alt="">
+			<img src="./images/3.jpg" alt="">
+			<img src="./images/4.jpg" alt="">
+			<img src="./images/5.jpg" alt="">
+			<img src="./images/6.jpg" alt="">
+		</div>
+	</div>
+</body>
+</html>

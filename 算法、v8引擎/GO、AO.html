@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<script>
+		/*
+			GO（Global Object）
+			AO（Active Object）
+		*/
+
+		function test(a, b) {
+			console.log(a);		// function a() {}
+			console.log(c);		// function c() {}
+			var c = 123;
+			function a() {};
+			console.log(b);		// 3
+			function c() {};
+			var b = function cd() {}
+			console.log(b)		// function cd() {}
+		}
+		test(1,3)
+
+		/*
+			1、初始化AO对象
+			AO{
+				
+			}
+
+			2、初始化形参实参（内置隐式对象）
+			AO{
+				this: undefined,
+				arguments: undefined,
+				a: undefined,
+				b: undefined,
+				c: undefinded
+			}
+			
+			3、实参赋值给形参（内置隐式对象创建值）
+			AO{
+				this: window,
+				arguments: [],
+				a: 1,
+				b: 3,
+				c: undefinded
+			}
+
+			4、函数定义覆盖给AO的属性
+			AO{
+				this: window,
+				arguments: [],
+				a: function a() {},
+				b: 3,
+				c: function c() {}
+			}
+		*/
+	</script>
+</body>
+</html>
