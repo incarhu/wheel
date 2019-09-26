@@ -8,7 +8,7 @@ window.onload = function() {
 class BackToTop {
 	constructor(options) {
 		// 要传入的节点
-		this.$el = document.getElementById(options.el ? options.el : '')
+		this.$el = document.getElementById(options.el ? options.el : 'to-top')
 		// 初始化回到顶部的dom节点
 		this.$topEv = null
 		// 定时器
