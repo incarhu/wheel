@@ -5,5 +5,5 @@ body,div{margin:0;padding:0;}
 	bottom: 80px;
 	z-index: 99;
 	cursor: pointer;
-	display: none;
+	opacity: 0;
 }

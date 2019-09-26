@@ -1,6 +1,7 @@
 window.onload = function() {
 	new BackToTop({
-		el: 'to-top'
+		el: 'to-top',
+		showWhen: 300
 	})
 }
 
@@ -13,8 +14,8 @@ class BackToTop {
 		this.$topEv = null
 		// 定时器
 		this.$timer = null
-		// 获取可视区域的高度
-		this.$clientHeight = document.documentElement.clientHeight
+		// 滚动条向下滑动多少时，出现回到顶部按钮
+		this.$showWhen = options.showWhen || 400
 		// 标志，是否到达顶部
 		this.$isTop = true
 		this.init()
@@ -47,10 +48,10 @@ class BackToTop {
 			// 如果滚动条的top > 可视区的高度
 			let _scrollTop = document.documentElement.scrollTop || document.body.scrollTop
         
-            if(_scrollTop >= this.$clientHeight) {
-            	this.$topEv.style.display = 'block'
+            if(_scrollTop >= this.$showWhen) {
+            	this.$topEv.style.opacity = 1
             } else {
-            	this.$topEv.style.display = 'none'
+            	this.$topEv.style.opacity = 0
             }
 
             // 第二次拖动滚动条时，需设置为true
