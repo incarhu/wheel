@@ -97,40 +97,43 @@
 				this.$data = this.$options.data
 				this.$el = document.querySelector(this.$options.el)
 
-				this.$el.innerHTML = this.LiveTree(this.$data)	
+				this.$el.innerHTML = this.liveTree(this.$data)
+
+				this.publicHandle()
 			}
 
 			// 实例树展示
-			LiveTree(data) {
+			liveTree(data) {
 				var str = `<ul>`
 				for(var i = 0; i < data.length; i++){
 					str += `<li>`;
 					str += `
-						<p data-flag="true" onClick="new CheckNode(event)">${data[i].name}</p>
-						<span class="add" onClick="new Add(event)">添加</span>
-						<span class="deletes" onClick="new Deletes(event)">删除</span>`;
+						<p data-flag="true" class="name">${data[i].name}</p>
+						<span class="add" class="add">添加</span>
+						<span class="deletes" class="deletes">删除</span>`;
 					if(data[i].children && data[i].children.length) {
-						str += this.LiveTree(data[i].children);
+						str += this.liveTree(data[i].children);
 					}
 					str += `</li>`;
 				}
-				
-
 				str += `</ul>`
 				return str
 			}
-		}
 
-
-		// 检查节点 
-		class CheckNode {
-			constructor(event) {
-				this.$event = event
-				this.Toggle(this.$event)
+			// 统一处理点击	
+			publicHandle() {
+				this.$el.onclick = function(event) {
+					this.toggle(event)
+					if (event.target.innerHTML === '添加' && event.target.className === 'add'){
+                        this.addNodes(event)
+                    }else if (event.target.innerHTML === '删除' && event.target.className === 'deletes'){
+                        this.deleteNodes(event)
+                    }
+				}.bind(this)
 			}
 
 			// 检查元素并展开折叠
-			Toggle(event) {
+			toggle(event) {
 				var flag = event.target
 				// 获取当前点击DOM的同级元素标签
 				var oSibling = event.target.parentNode.lastChild;
@@ -139,7 +142,7 @@
 					for(var i = 0; i < oChild.length; i++){
 						// 表示非文本节点
 						if(oChild[i].nodeType === 1){
-							if(this.GetData(flag.getAttribute('data-flag'))) {
+							if(this.getData(flag.getAttribute('data-flag'))) {
 								flag.setAttribute("data-flag", false)
 								oChild[i].style.display = 'none'
 							} else {
@@ -149,10 +152,10 @@
 						}
 					}
 				}
-			};
+			}
 
 			// JQ源码转换自定义属性
-			GetData(data) {
+			getData(data) {
 				if ( data === "true" ) {
 					return true;
 				}
@@ -166,44 +169,28 @@
 				}
 				return data;
 			}
-		}
 
-		// 添加节点
-		class Add {
-			constructor(event) {
-				this.$event = event
-				this.AddNodes(this.$event)
-			}
-
-			// 文本
-			AddNodes(event) {
+			// 添加节点
+			addNodes(event) {
 				var oParent = event.target.parentNode
 				var oSpace = document.createElement('ul')
 				oParent.appendChild(oSpace)
 				oSpace.innerHTML = this.CreateNode()
 			}
-
 			// 文本
 			CreateNode() {
 				var addStr = `
 								<li>
-									<p data-flag="true" onClick="new CheckNode(event)">sdfsdfsd</p>
-									<span class="add" onClick="new Add(event)">添加</span>
-									<span class="deletes" onClick="new Deletes(event)">删除</span>
+									<p data-flag="true">sdfsdfsd</p>
+									<span class="add">添加</span>
+									<span class="deletes">删除</span>
 								</li>
 						`;
 				return addStr
 			}
-		}
 
-		// 删除
-		class Deletes {
-			constructor(event) {
-				this.$event = event
-				this.update(this.$event)
-			}
-
-			update(event) {
+			// 删除节点
+			deleteNodes(event) {
 				// 获取到当前节点的爷爷节点
 				var oGrandpa = event.target.parentNode.parentNode
 
@@ -227,7 +214,6 @@
 				oParents.removeChild(oParent)
 			}
 		}
-
 
 		// 实例化--调用
 		new Tree({
