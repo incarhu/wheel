@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="./style/index.css">
+</head>
+<body>
+    <div class="box">
+        <!-- <div class="beforeData identical_style">
+            <div>
+                <input type="checkbox" value="aa" />
+                全选
+            </div>
+            <div>
+                <input type="search">
+            </div>
+            <div class="content">
+                <div class="list">
+                    <input type="checkbox" value="aa" />
+                    <span>aa</span>
+                </div>
+                <div class="list">
+                    <input type="checkbox" value="bb" />
+                    <span>bb</span>
+                </div>
+            </div>
+        </div> -->
+        <!-- <div class="operate">
+            <div class="opera_style">></div>
+            <div class="opera_style opera_left"><</div>
+        </div> -->
+        <!-- <div class="afterData identical_style">选择后</div> -->
+    </div>
+
+    <button class="btn">确定</button>
+
+    <script src="./js/index.js"></script>
+    <script>
+        window.onload = function() {
+            var aaa;
+            var data = [
+                {id: 0, label: "aa", value: 'aa'},
+                {id: 1, label: "bb", value: 'bb'},
+                {id: 2, label: "cc", value: 'cc'},
+                {id: 3, label: "dd", value: 'dd'}
+            ]
+            var shuttle = new Shuttle({
+                data: data,
+                el: '.box',
+                callBack: function(datas) {
+                    aaa = datas
+                }
+            })
+
+            var btn = document.querySelector('.btn')
+            btn.onclick= function() {
+                console.log(aaa)
+            }
+        }
+    </script>
+</body>
+</html>

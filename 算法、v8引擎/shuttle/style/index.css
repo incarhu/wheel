@@ -1,0 +1,39 @@
+@charset 'utf-8';
+
+.box {
+    display: flex;
+    font-size: 16px;
+}
+
+.identical_style {
+    width: 200px;
+    height: 200px;
+    padding: 10px 20px;
+    border: 1px solid #ccc;
+}
+
+.operate {
+    margin: 0 20px;
+    padding-top: 60px;   
+}
+.opera_style {
+    display: block;
+    color: #fff;
+    background-color: #409eff;
+    border-color: #409eff;
+    border: 1px solid #dcdfe6;
+    outline: none;
+    transition: .1s;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.opera_style:disabled {
+    background-color: #a0cfff;
+    border-color: #a0cfff;
+    cursor: not-allowed;
+}
+.opera_left {
+    margin-top: 10px;
+}
